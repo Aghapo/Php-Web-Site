@@ -1,4 +1,27 @@
 <?php
 
-// override core en language system validation or define your own en language validation message
-return [];
+return [
+    'required'              => '{field} alanı zorunludur.',
+    'isset'                 => '{field} alanının bir değeri olmalıdır.',
+    'valid_email'           => '{field} alanı geçerli bir e-posta adresi içermelidir.',
+    'valid_emails'          => '{field} alanı geçerli tüm e-posta adreslerini içermelidir.',
+    'min_length'            => '{field} alanı en az {param} karakter uzunluğunda olmalıdır.',
+    'max_length'            => '{field} alanı {param} karakteri aşamaz.',
+    'exact_length'          => '{field} alanı tam olarak {param} karakter uzunluğunda olmalıdır.',
+    'alpha'                 => '{field} alanı sadece alfabetik karakterler içerebilir.',
+    'alpha_numeric'         => '{field} alanı sadece alfasayısal karakterler içerebilir.',
+    'alpha_numeric_space'   => '{field} alanı sadece alfasayısal karakterler ve boşluk içerebilir.',
+    'alpha_dash'            => '{field} alanı sadece alfasayısal karakterler, alt çizgi ve tire içerebilir.',
+    'numeric'               => '{field} alanı sadece sayılardan oluşmalıdır.',
+    'is_numeric'            => '{field} alanı sadece sayısal karakterler içermelidir.',
+    'integer'               => '{field} alanı bir tamsayı içermelidir.',
+    'matches'               => '{field} alanı ile {param} alanı eşleşmiyor.',
+    'is_unique'             => '{field} alanı benzersiz bir değer içermelidir, bu değer zaten kullanımda.',
+    'is_natural'            => '{field} alanı sadece rakamları içermelidir.',
+    'is_natural_no_zero'    => '{field} alanı sadece sıfırdan büyük rakamları içermelidir.',
+    'decimal'               => '{field} alanı ondalıklı bir sayı içermelidir.',
+    'less_than'             => '{field} alanı {param} sayısından küçük olmalıdır.',
+    'less_than_equal_to'    => '{field} alanı {param} sayısından küçük veya eşit olmalıdır.',
+    'greater_than'          => '{field} alanı {param} sayısından büyük olmalıdır.',
+    'greater_than_equal_to' => '{field} alanı {param} sayısından büyük veya eşit olmalıdır.',
+];

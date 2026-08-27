@@ -14,7 +14,7 @@ class Register extends BaseController
     public function index()
     {
         return view('pagers/register', [
-            'title' => 'Kayıt Ol | Öğrenci Takip Sistemi'
+            'title' => lang('Register.title')
         ]);
     }
 
@@ -23,64 +23,36 @@ class Register extends BaseController
      */
     public function create()
     {
+        $locale = $this->request->getLocale();
+
         $rules = [
             'first_name' => [
-                'label'  => 'Ad',
+                'label'  => lang('Register.first_name'),
                 'rules'  => 'required|min_length[2]|max_length[155]',
-                'errors' => [
-                    'required'   => 'Ad alanı zorunludur.',
-                    'min_length' => 'Ad en az 2 karakter olmalıdır.',
-                    'max_length' => 'Ad en fazla 155 karakter olabilir.'
-                ]
             ],
             'sur_name' => [
-                'label'  => 'Soyad',
+                'label'  => lang('Register.sur_name'),
                 'rules'  => 'required|min_length[2]|max_length[155]',
-                'errors' => [
-                    'required'   => 'Soyad alanı zorunludur.',
-                    'min_length' => 'Soyad en az 2 karakter olmalıdır.',
-                    'max_length' => 'Soyad en fazla 155 karakter olabilir.'
-                ]
             ],
             'email' => [
-                'label'  => 'E-Posta',
+                'label'  => lang('Register.email'),
                 'rules'  => 'required|valid_email|is_unique[users.email]',
-                'errors' => [
-                    'required'    => 'E-posta adresi zorunludur.',
-                    'valid_email' => 'Lütfen geçerli bir e-posta adresi giriniz.',
-                    'is_unique'   => 'Bu e-posta adresi zaten kullanılmaktadır.'
-                ]
             ],
             'password' => [
-                'label'  => 'Şifre',
+                'label'  => lang('Register.password'),
                 'rules'  => 'required|min_length[6]|max_length[255]',
-                'errors' => [
-                    'required'   => 'Şifre alanı zorunludur.',
-                    'min_length' => 'Şifre en az 6 karakter olmalıdır.',
-                    'max_length' => 'Şifre en fazla 255 karakter olabilir.'
-                ]
             ],
             'password_confirm' => [
-                'label'  => 'Şifre Tekrarı',
+                'label'  => lang('Register.password_confirm'),
                 'rules'  => 'required|matches[password]',
-                'errors' => [
-                    'required' => 'Şifre tekrarı alanı zorunludur.',
-                    'matches'  => 'Girdiğiniz şifreler birbiriyle eşleşmiyor.'
-                ]
             ],
             'bio' => [
-                'label' => 'Biyografi',
+                'label' => lang('Register.bio'),
                 'rules' => 'permit_empty|max_length[1000]',
-                'errors' => [
-                    'max_length' => 'Biyografi en fazla 1000 karakter olabilir.'
-                ]
             ],
             'terms' => [
-                'label'  => 'Kullanım Koşulları',
+                'label'  => lang('Register.terms'),
                 'rules'  => 'required',
-                'errors' => [
-                    'required' => 'Kayıt olmak için kullanım koşullarını kabul etmelisiniz.'
-                ]
             ]
         ];
 
@@ -97,7 +69,7 @@ class Register extends BaseController
              ->setSurName((string) $this->request->getPost('sur_name'))
              ->setEmail((string) $this->request->getPost('email'))
              ->setPassword((string) $this->request->getPost('password'))
-             ->setBio($this->request->getPost('bio') ? (string) $this->request->getPost('bio') : 'Biografinizi Yazabilirsiniz.')
+             ->setBio($this->request->getPost('bio') ? (string) $this->request->getPost('bio') : ($locale === 'tr' ? 'Biografinizi Yazabilirsiniz.' : 'Tell us about yourself.'))
              ->setVerifKey(random_string('alpha', 16))
              ->setVerifCode(random_int(100000, 999999))
              ->setStatus(defined('USER_ACTIVE') ? USER_ACTIVE : 'ACTIVE');
@@ -114,6 +86,6 @@ class Register extends BaseController
         }
 
         // 4. Başarılı Sonuç
-        return redirect()->to('/register')->with('success', 'Hesabınız başarıyla oluşturuldu! Şimdi giriş yapabilirsiniz.');
+        return redirect()->to('/' . $locale . '/register')->with('success', lang('Register.success_message'));
     }
 }

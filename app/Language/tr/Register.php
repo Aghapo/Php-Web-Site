@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'title'             => 'Yeni Hesap Oluşturun',
+    'subtitle'          => 'Sisteme erişmek için bilgilerinizi eksiksiz doldurun.',
+    'first_name'        => 'Ad',
+    'sur_name'          => 'Soyad',
+    'email'             => 'E-Posta Adresi',
+    'password'          => 'Şifre',
+    'password_confirm'  => 'Şifre Tekrarı',
+    'bio'               => 'Biyografi',
+    'bio_placeholder'   => 'Kendiniz hakkında kısa bilgi yazabilirsiniz...',
+    'terms'             => 'Kullanım Koşulları',
+    'privacy'           => 'Gizlilik Politikası',
+    'terms_agree'       => '{terms} ve {privacy}\'nı okudum, kabul ediyorum.',
+    'submit_btn'        => 'Hesabımı Oluştur',
+    'submitting'        => 'Hesap Oluşturuluyor...',
+    'have_account'      => 'Zaten bir hesabınız var mı?',
+    'login'             => 'Giriş Yap',
+    'weak_password'     => 'Zayıf Şifre',
+    'medium_password'   => 'Orta Güçlükte Şifre',
+    'strong_password'   => 'Güçlü Şifre',
+    'password_match'    => '✓ Şifreler eşleşiyor',
+    'password_mismatch' => '✗ Şifreler eşleşmiyor',
+    'success_message'   => 'Hesabınız başarıyla oluşturuldu! Şimdi giriş yapabilirsiniz.',
+];

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="<?= service('request')->getLocale() ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= esc($title ?? 'Kayıt Ol | Öğrenci Takip Sistemi') ?></title>
+    <title><?= esc(lang('Register.title')) ?> | <?= esc(lang('Register.title')) ?></title>
 
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,13 +22,25 @@
     <div class="register-container">
         <div class="register-card">
 
+            <!-- Dil Seçici (Language Switcher) -->
+            <div class="d-flex justify-content-end mb-2">
+                <div class="btn-group btn-group-sm" role="group" aria-label="Language Selector">
+                    <a href="/tr/register" class="btn btn-sm <?= (service('request')->getLocale() === 'tr') ? 'btn-primary text-white' : 'btn-outline-secondary' ?>">
+                        🇹🇷 TR
+                    </a>
+                    <a href="/en/register" class="btn btn-sm <?= (service('request')->getLocale() === 'en') ? 'btn-primary text-white' : 'btn-outline-secondary' ?>">
+                        🇬🇧 EN
+                    </a>
+                </div>
+            </div>
+
             <!-- Başlık & Logo Alanı -->
             <div class="register-header">
                 <div class="brand-icon">
                     <i class="bi bi-person-plus-fill"></i>
                 </div>
-                <h1>Yeni Hesap Oluşturun</h1>
-                <p>Sisteme erişmek için bilgilerinizi eksiksiz doldurun.</p>
+                <h1><?= esc(lang('Register.title')) ?></h1>
+                <p><?= esc(lang('Register.subtitle')) ?></p>
             </div>
 
             <!-- Başarı / Hata Bildirimleri -->
@@ -51,20 +63,21 @@
             ?>
 
             <!-- Kayıt Formu -->
-            <form action="/register" method="POST" id="registerForm" novalidate>
+            <?php $currentLocale = service('request')->getLocale(); ?>
+            <form action="/<?= $currentLocale ?>/register" method="POST" id="registerForm" novalidate>
                 <?= csrf_field() ?>
 
                 <div class="row g-3 mb-3">
                     <!-- Ad -->
                     <div class="col-md-6">
                         <label for="first_name" class="form-label">
-                            <i class="bi bi-person text-muted"></i> Ad <span class="text-danger">*</span>
+                            <i class="bi bi-person text-muted"></i> <?= esc(lang('Register.first_name')) ?> <span class="text-danger">*</span>
                         </label>
                         <input type="text" 
                                class="form-control <?= isset($errors['first_name']) ? 'is-invalid' : '' ?>" 
                                id="first_name" 
                                name="first_name" 
-                               placeholder="Adınız" 
+                               placeholder="<?= esc(lang('Register.first_name')) ?>" 
                                value="<?= old('first_name') ?>" 
                                required>
                         <?php if (isset($errors['first_name'])): ?>
@@ -75,13 +88,13 @@
                     <!-- Soyad -->
                     <div class="col-md-6">
                         <label for="sur_name" class="form-label">
-                            <i class="bi bi-person text-muted"></i> Soyad <span class="text-danger">*</span>
+                            <i class="bi bi-person text-muted"></i> <?= esc(lang('Register.sur_name')) ?> <span class="text-danger">*</span>
                         </label>
                         <input type="text" 
                                class="form-control <?= isset($errors['sur_name']) ? 'is-invalid' : '' ?>" 
                                id="sur_name" 
                                name="sur_name" 
-                               placeholder="Soyadınız" 
+                               placeholder="<?= esc(lang('Register.sur_name')) ?>" 
                                value="<?= old('sur_name') ?>" 
                                required>
                         <?php if (isset($errors['sur_name'])): ?>
@@ -93,7 +106,7 @@
                 <!-- E-Posta -->
                 <div class="mb-3">
                     <label for="email" class="form-label">
-                        <i class="bi bi-envelope text-muted"></i> E-Posta Adresi <span class="text-danger">*</span>
+                        <i class="bi bi-envelope text-muted"></i> <?= esc(lang('Register.email')) ?> <span class="text-danger">*</span>
                     </label>
                     <input type="email" 
                            class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>" 
@@ -111,16 +124,16 @@
                     <!-- Şifre -->
                     <div class="col-md-6">
                         <label for="password" class="form-label">
-                            <i class="bi bi-lock text-muted"></i> Şifre <span class="text-danger">*</span>
+                            <i class="bi bi-lock text-muted"></i> <?= esc(lang('Register.password')) ?> <span class="text-danger">*</span>
                         </label>
                         <div class="password-input-group">
                             <input type="password" 
                                    class="form-control <?= isset($errors['password']) ? 'is-invalid' : '' ?>" 
                                    id="password" 
                                    name="password" 
-                                   placeholder="En az 6 karakter" 
+                                   placeholder="••••••••" 
                                    required>
-                            <button type="button" class="password-toggle-btn" data-target="password">
+                            <button type="button" class="password-toggle-btn" data-target="password" aria-label="Toggle password visibility">
                                 <i class="bi bi-eye"></i>
                             </button>
                         </div>
@@ -136,16 +149,16 @@
                     <!-- Şifre Tekrarı -->
                     <div class="col-md-6">
                         <label for="password_confirm" class="form-label">
-                            <i class="bi bi-shield-lock text-muted"></i> Şifre Tekrarı <span class="text-danger">*</span>
+                            <i class="bi bi-shield-lock text-muted"></i> <?= esc(lang('Register.password_confirm')) ?> <span class="text-danger">*</span>
                         </label>
                         <div class="password-input-group">
                             <input type="password" 
                                    class="form-control <?= isset($errors['password_confirm']) ? 'is-invalid' : '' ?>" 
                                    id="password_confirm" 
                                    name="password_confirm" 
-                                   placeholder="Şifrenizi tekrar girin" 
+                                   placeholder="••••••••" 
                                    required>
-                            <button type="button" class="password-toggle-btn" data-target="password_confirm">
+                            <button type="button" class="password-toggle-btn" data-target="password_confirm" aria-label="Toggle confirm password visibility">
                                 <i class="bi bi-eye"></i>
                             </button>
                         </div>
@@ -159,13 +172,13 @@
                 <!-- Biyografi (İsteğe Bağlı) -->
                 <div class="mb-3">
                     <label for="bio" class="form-label">
-                        <i class="bi bi-card-text text-muted"></i> Biyografi <span class="text-muted fw-normal">(İsteğe Bağlı)</span>
+                        <i class="bi bi-card-text text-muted"></i> <?= esc(lang('Register.bio')) ?> <span class="text-muted fw-normal">(<?= $currentLocale === 'tr' ? 'İsteğe Bağlı' : 'Optional' ?>)</span>
                     </label>
                     <textarea class="form-control <?= isset($errors['bio']) ? 'is-invalid' : '' ?>" 
                               id="bio" 
                               name="bio" 
                               rows="2" 
-                              placeholder="Kendiniz hakkında kısa bilgi yazabilirsiniz..."><?= old('bio') ?></textarea>
+                              placeholder="<?= esc(lang('Register.bio_placeholder')) ?>"><?= old('bio') ?></textarea>
                     <?php if (isset($errors['bio'])): ?>
                         <div class="invalid-feedback"><?= $errors['bio'] ?></div>
                     <?php endif; ?>
@@ -181,7 +194,7 @@
                            <?= old('terms') ? 'checked' : '' ?> 
                            required>
                     <label class="form-check-label" for="terms">
-                        <a href="#" tabindex="-1">Kullanım Koşulları</a> ve <a href="#" tabindex="-1">Gizlilik Politikası</a>'nı okudum, kabul ediyorum.
+                        <a href="#" tabindex="-1"><?= esc(lang('Register.terms')) ?></a> &amp; <a href="#" tabindex="-1"><?= esc(lang('Register.privacy')) ?></a>
                     </label>
                     <?php if (isset($errors['terms'])): ?>
                         <div class="invalid-feedback"><?= $errors['terms'] ?></div>
@@ -191,13 +204,13 @@
                 <!-- Kayıt Ol Butonu -->
                 <button type="submit" class="btn-register" id="submitBtn">
                     <i class="bi bi-check-lg fs-5"></i>
-                    <span>Hesabımı Oluştur</span>
+                    <span><?= esc(lang('Register.submit_btn')) ?></span>
                 </button>
             </form>
 
             <!-- Giriş Yap Linki -->
             <div class="login-link-container">
-                Zaten bir hesabınız var mı? <a href="/login">Giriş Yap</a>
+                <?= esc(lang('Register.have_account')) ?> <a href="/login"><?= esc(lang('Register.login')) ?></a>
             </div>
 
         </div>
