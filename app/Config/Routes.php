@@ -32,6 +32,15 @@ $routes->group('{locale}', static function ($routes) {
         $routes->post('admin', 'Backend\Register::createAdmin');
     });
 
+    // E-Posta Doğrulama & Şifre Sıfırlama Rotaları
+    $routes->group('auth', static function ($routes) {
+        $routes->get('verify/(:segment)', 'Backend\Auth::verify/$1');
+        $routes->get('forgot-password', 'Backend\Auth::forgotPassword');
+        $routes->post('forgot-password', 'Backend\Auth::sendResetLink');
+        $routes->get('reset-password/(:segment)', 'Backend\Auth::resetPassword/$1');
+        $routes->post('reset-password/(:segment)', 'Backend\Auth::updatePassword/$1');
+    });
+
     // Giriş & Çıkış Rotaları
     $routes->get('login', 'Login::index');
     $routes->post('login/kontrol', 'Login::kontrol');
@@ -61,12 +70,20 @@ $routes->group('{locale}', static function ($routes) {
     $routes->get('excel-aktar', 'Merhaba::excelAktar');
 });
 
-// Dil öneki olmadan da doğrudan erişim desteği
+// Dil öneki olmadan doğrudan erişim desteği
 $routes->group('register', static function ($routes) {
     $routes->get('/', 'Backend\Register::index');
     $routes->post('/', 'Backend\Register::create');
     $routes->get('admin', 'Backend\Register::admin');
     $routes->post('admin', 'Backend\Register::createAdmin');
+});
+
+$routes->group('auth', static function ($routes) {
+    $routes->get('verify/(:segment)', 'Backend\Auth::verify/$1');
+    $routes->get('forgot-password', 'Backend\Auth::forgotPassword');
+    $routes->post('forgot-password', 'Backend\Auth::sendResetLink');
+    $routes->get('reset-password/(:segment)', 'Backend\Auth::resetPassword/$1');
+    $routes->post('reset-password/(:segment)', 'Backend\Auth::updatePassword/$1');
 });
 
 $routes->get('login', 'Login::index');

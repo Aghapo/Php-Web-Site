@@ -32,13 +32,13 @@ class UserModel extends Model
 
         protected $validationRules = [
             'group_id'   => 'permit_empty|numeric',
-            'first_name' => 'required|string|min_length[3]',
-            'sur_name'   => 'required|string|min_length[3]',
-            'email'      => 'required|valid_email|is_unique[users.email]',
-            'password'   => 'required',
-            'verif_key'  => 'required|alpha',
-            'verif_code' => 'permit_empty|numeric|min_length[6]',
-            'status'     => 'required'
+            'first_name' => 'required|string|min_length[2]',
+            'sur_name'   => 'required|string|min_length[2]',
+            'email'      => 'required|valid_email|is_unique[users.email,id,{id}]',
+            'password'   => 'permit_empty',
+            'verif_key'  => 'permit_empty|alpha_numeric',
+            'verif_code' => 'permit_empty|numeric',
+            'status'     => 'permit_empty'
         ];
         
         protected $validationMessages = [

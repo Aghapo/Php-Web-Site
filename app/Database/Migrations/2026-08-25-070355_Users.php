@@ -15,7 +15,7 @@ class Users extends Migration
             'sur_name'   => ['type' => 'VARCHAR', 'constraint' => 155, 'null' => false],
             'email'      => ['type' => 'VARCHAR', 'constraint' => 155, 'null' => false, 'unique' => true],
             'password'   => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => false],
-            'verif_key'  => ['type' => 'VARCHAR', 'constraint' => 155, 'null' => false],
+            'verif_key'  => ['type' => 'VARCHAR', 'constraint' => 155, 'null' => true],
             'verif_code' => ['type' => 'INT', 'constraint' => 6, 'null' => true],
             'bio'        => ['type' => 'TEXT', 'null' => true],
             'status'     => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'PENDING'],

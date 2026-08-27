@@ -4,6 +4,7 @@ namespace App\Controllers\Backend;
 
 use App\Controllers\BaseController;
 use App\Entities\UserEntity;
+use App\Libraries\EmailService;
 use App\Models\UserModel;
 
 class Register extends BaseController
@@ -42,9 +43,9 @@ class Register extends BaseController
              ->setEmail((string) $this->request->getPost('email'))
              ->setPassword((string) $this->request->getPost('password'))
              ->setBio($this->request->getPost('bio') ? (string) $this->request->getPost('bio') : ($locale === 'tr' ? 'Biografinizi Yazabilirsiniz.' : 'Tell us about yourself.'))
-             ->setVerifKey(random_string('alpha', 16))
+             ->setVerifKey(random_string('alnum', 32))
              ->setVerifCode(random_int(100000, 999999))
-             ->setStatus(defined('USER_ACTIVE') ? USER_ACTIVE : 'ACTIVE');
+             ->setStatus(defined('USER_PENDING') ? USER_PENDING : 'PENDING');
 
         $userModel = new UserModel();
 
@@ -53,13 +54,18 @@ class Register extends BaseController
                 session()->setFlashdata('errors', $userModel->errors());
                 return redirect()->back()->withInput();
             }
+
+            // 1. E-posta: Hesap Doğrulama E-postası Gönder
+            $emailService = new EmailService();
+            $emailService->sendAccountVerification($user);
+
         } catch (\Throwable $e) {
             log_message('error', 'Kayıt Hatası: {message}', ['message' => $e->getMessage()]);
             session()->setFlashdata('hata', 'Kayıt sırasında bir hata oluştu: ' . $e->getMessage());
             return redirect()->back()->withInput();
         }
 
-        session()->setFlashdata('success', lang('Register.success_message'));
+        session()->setFlashdata('success', lang('Auth.verification_sent'));
         return redirect()->to('/' . $locale . '/register');
     }
 
@@ -97,9 +103,9 @@ class Register extends BaseController
               ->setEmail((string) $this->request->getPost('email'))
               ->setPassword((string) $this->request->getPost('password'))
               ->setBio($this->request->getPost('bio') ? (string) $this->request->getPost('bio') : ($locale === 'tr' ? 'Sistem Yöneticisi' : 'System Administrator'))
-              ->setVerifKey(random_string('alpha', 16))
+              ->setVerifKey(random_string('alnum', 32))
               ->setVerifCode(random_int(100000, 999999))
-              ->setStatus(defined('USER_ACTIVE') ? USER_ACTIVE : 'ACTIVE');
+              ->setStatus(defined('USER_PENDING') ? USER_PENDING : 'PENDING');
 
         $userModel = new UserModel();
 
@@ -108,13 +114,18 @@ class Register extends BaseController
                 session()->setFlashdata('errors', $userModel->errors());
                 return redirect()->back()->withInput();
             }
+
+            // 1. E-posta: Yönetici Hesap Doğrulama E-postası Gönder
+            $emailService = new EmailService();
+            $emailService->sendAccountVerification($admin);
+
         } catch (\Throwable $e) {
             log_message('error', 'Admin Kayıt Hatası: {message}', ['message' => $e->getMessage()]);
             session()->setFlashdata('hata', 'Yönetici kaydı sırasında hata oluştu: ' . $e->getMessage());
             return redirect()->back()->withInput();
         }
 
-        session()->setFlashdata('success', lang('Register.admin_success_message'));
+        session()->setFlashdata('success', lang('Auth.verification_sent'));
         return redirect()->to('/' . $locale . '/register/admin');
     }
 }
