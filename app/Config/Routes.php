@@ -4,13 +4,13 @@ use CodeIgniter\Router\RouteCollection;
 
 /** @var RouteCollection $routes */
 
-// Ana kök dizini aktif dile yönlendirir (Örn: / -> /tr)
+// Ana kök dizini aktif varsayılan dile yönlendirir (Örn: / -> /tr)
 $routes->get('/', static function () {
     return redirect()->to(service('request')->getLocale());
 });
 
 // Veritabanı Kurulum Rotaları
-$routes->group('install', function ($routes) {
+$routes->group('install', static function ($routes) {
     $routes->get('table', 'Install::create_Table');
     $routes->get('admin', 'Install::createAdmin');
     $routes->get('demo', 'Install::createDemo');
@@ -19,16 +19,20 @@ $routes->group('install', function ($routes) {
 // =========================================================================
 // ÇOK DİLLİ ROTA GRUBU ({locale} -> 'tr' veya 'en')
 // =========================================================================
-$routes->group('{locale}', function ($routes) {
+$routes->group('{locale}', static function ($routes) {
 
     // Ana Sayfa
     $routes->get('/', 'Home::index');
 
-    // Kayıt Rotaları (Modern Register)
-    $routes->get('register', 'Backend\Register::index');
-    $routes->post('register', 'Backend\Register::create');
+    // Kayıt Rotaları Grubu (Kullanıcı & Yönetici Kaydı)
+    $routes->group('register', static function ($routes) {
+        $routes->get('/', 'Backend\Register::index');
+        $routes->post('/', 'Backend\Register::create');
+        $routes->get('admin', 'Backend\Register::admin');
+        $routes->post('admin', 'Backend\Register::createAdmin');
+    });
 
-    // Giriş / Çıkış Rotaları
+    // Giriş & Çıkış Rotaları
     $routes->get('login', 'Login::index');
     $routes->post('login/kontrol', 'Login::kontrol');
     $routes->post('logout', 'Login::cikis');
@@ -57,8 +61,13 @@ $routes->group('{locale}', function ($routes) {
     $routes->get('excel-aktar', 'Merhaba::excelAktar');
 });
 
-// Dil öneki olmadan erişim desteği
-$routes->get('register', 'Backend\Register::index');
-$routes->post('register', 'Backend\Register::create');
+// Dil öneki olmadan da doğrudan erişim desteği
+$routes->group('register', static function ($routes) {
+    $routes->get('/', 'Backend\Register::index');
+    $routes->post('/', 'Backend\Register::create');
+    $routes->get('admin', 'Backend\Register::admin');
+    $routes->post('admin', 'Backend\Register::createAdmin');
+});
+
 $routes->get('login', 'Login::index');
 $routes->post('login/kontrol', 'Login::kontrol');

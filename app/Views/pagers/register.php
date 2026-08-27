@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= esc(lang('Register.title')) ?> | <?= esc(lang('Register.title')) ?></title>
+    <title><?= esc($title ?? lang('Register.title')) ?> | Öğrenci Takip Sistemi</title>
 
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,16 +19,32 @@
 </head>
 <body>
 
+    <?php 
+        $currentLocale = service('request')->getLocale();
+        $isAdmin = $isAdmin ?? false;
+        $formAction = $isAdmin ? "/{$currentLocale}/register/admin" : "/{$currentLocale}/register";
+        $trLink = $isAdmin ? "/tr/register/admin" : "/tr/register";
+        $enLink = $isAdmin ? "/en/register/admin" : "/en/register";
+        $errors = session('errors') ?? [];
+    ?>
+
     <div class="register-container">
         <div class="register-card">
 
             <!-- Dil Seçici (Language Switcher) -->
-            <div class="d-flex justify-content-end mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <?php if ($isAdmin): ?>
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-semibold">
+                            <i class="bi bi-shield-lock-fill me-1"></i> <?= esc(lang('Register.admin_badge')) ?>
+                        </span>
+                    <?php endif; ?>
+                </div>
                 <div class="btn-group btn-group-sm" role="group" aria-label="Language Selector">
-                    <a href="/tr/register" class="btn btn-sm <?= (service('request')->getLocale() === 'tr') ? 'btn-primary text-white' : 'btn-outline-secondary' ?>">
+                    <a href="<?= $trLink ?>" class="btn btn-sm <?= ($currentLocale === 'tr') ? 'btn-primary text-white' : 'btn-outline-secondary' ?>">
                         🇹🇷 TR
                     </a>
-                    <a href="/en/register" class="btn btn-sm <?= (service('request')->getLocale() === 'en') ? 'btn-primary text-white' : 'btn-outline-secondary' ?>">
+                    <a href="<?= $enLink ?>" class="btn btn-sm <?= ($currentLocale === 'en') ? 'btn-primary text-white' : 'btn-outline-secondary' ?>">
                         🇬🇧 EN
                     </a>
                 </div>
@@ -36,35 +52,18 @@
 
             <!-- Başlık & Logo Alanı -->
             <div class="register-header">
-                <div class="brand-icon">
-                    <i class="bi bi-person-plus-fill"></i>
+                <div class="brand-icon <?= $isAdmin ? 'bg-danger' : '' ?>">
+                    <i class="bi <?= $isAdmin ? 'bi-shield-check' : 'bi-person-plus-fill' ?>"></i>
                 </div>
-                <h1><?= esc(lang('Register.title')) ?></h1>
-                <p><?= esc(lang('Register.subtitle')) ?></p>
+                <h1><?= esc($isAdmin ? lang('Register.admin_title') : lang('Register.title')) ?></h1>
+                <p><?= esc($isAdmin ? lang('Register.admin_subtitle') : lang('Register.subtitle')) ?></p>
             </div>
 
-            <!-- Başarı / Hata Bildirimleri -->
-            <?php if (session()->has('success')): ?>
-                <div class="alert alert-success d-flex align-items-center shadow-sm" role="alert">
-                    <i class="bi bi-check-circle-fill me-2 fs-5"></i>
-                    <div><?= session('success') ?></div>
-                </div>
-            <?php endif; ?>
-
-            <?php if (session()->has('hata')): ?>
-                <div class="alert alert-danger d-flex align-items-center shadow-sm" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
-                    <div><?= session('hata') ?></div>
-                </div>
-            <?php endif; ?>
-
-            <?php 
-                $errors = session('errors') ?? [];
-            ?>
+            <!-- Ortak Hata ve Bildirim Parçacığı (Partials) -->
+            <?= view('admin/layouts/partials/errors') ?>
 
             <!-- Kayıt Formu -->
-            <?php $currentLocale = service('request')->getLocale(); ?>
-            <form action="/<?= $currentLocale ?>/register" method="POST" id="registerForm" novalidate>
+            <form action="<?= $formAction ?>" method="POST" id="registerForm" novalidate>
                 <?= csrf_field() ?>
 
                 <div class="row g-3 mb-3">
@@ -169,6 +168,24 @@
                     </div>
                 </div>
 
+                <!-- Admin Güvenlik Kodu (Sadece Admin Kaydında) -->
+                <?php if ($isAdmin): ?>
+                    <div class="mb-3">
+                        <label for="admin_secret" class="form-label">
+                            <i class="bi bi-key text-muted"></i> <?= esc(lang('Register.admin_secret')) ?>
+                        </label>
+                        <input type="text" 
+                               class="form-control <?= isset($errors['admin_secret']) ? 'is-invalid' : '' ?>" 
+                               id="admin_secret" 
+                               name="admin_secret" 
+                               placeholder="<?= esc(lang('Register.admin_secret_placeholder')) ?>" 
+                               value="<?= old('admin_secret') ?>">
+                        <?php if (isset($errors['admin_secret'])): ?>
+                            <div class="invalid-feedback"><?= $errors['admin_secret'] ?></div>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+
                 <!-- Biyografi (İsteğe Bağlı) -->
                 <div class="mb-3">
                     <label for="bio" class="form-label">
@@ -202,9 +219,9 @@
                 </div>
 
                 <!-- Kayıt Ol Butonu -->
-                <button type="submit" class="btn-register" id="submitBtn">
+                <button type="submit" class="btn-register <?= $isAdmin ? 'btn-danger bg-danger border-0' : '' ?>" id="submitBtn">
                     <i class="bi bi-check-lg fs-5"></i>
-                    <span><?= esc(lang('Register.submit_btn')) ?></span>
+                    <span><?= esc($isAdmin ? lang('Register.admin_submit_btn') : lang('Register.submit_btn')) ?></span>
                 </button>
             </form>
 
