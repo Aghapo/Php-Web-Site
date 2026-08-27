@@ -55,7 +55,7 @@ class Merhaba extends BaseController
     {   
         $dersModel = new \App\Models\DersModel();
         $data['dersler'] = $dersModel->findAll();   
-        return view("Öğrenci_Ekle_view", $data);
+        return view('ogrenci_Ekle_view', $data);
     }
     
 

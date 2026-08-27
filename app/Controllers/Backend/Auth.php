@@ -10,20 +10,36 @@ use App\Models\UserModel;
 class Auth extends BaseController
 {
     /**
-     * E-posta Doğrulama İşlemi (GET /auth/verify/{token})
+     * E-posta Doğrulama İşlemi (GET /auth/verify/{token} veya ?token=...&id=...&email=...)
+     * Modern tek tıkla butonla doğrulama mekanizması.
      */
     public function verify(string $token = '')
     {
         $locale = $this->request->getLocale();
         $userModel = new UserModel();
 
+        // Token URL segmentinden veya Query parametresinden alınabilir
+        $token = !empty($token) ? $token : (string) $this->request->getGet('token');
+        $userId = $this->request->getGet('id');
+        $userEmail = $this->request->getGet('email');
+
         if (empty($token)) {
             session()->setFlashdata('error', lang('Auth.verify_invalid'));
             return redirect()->to("/{$locale}/login");
         }
 
-        // Token ile eşleşen kullanıcıyı bul
-        $user = $userModel->where('verif_key', $token)->first();
+        // Token'a göre sorgula
+        $builder = $userModel->where('verif_key', $token);
+
+        // Ek güvenlik: ID veya E-posta parametresi varsa eşleşmeyi doğrula
+        if (!empty($userId)) {
+            $builder->where('id', $userId);
+        }
+        if (!empty($userEmail)) {
+            $builder->where('email', urldecode($userEmail));
+        }
+
+        $user = $builder->first();
 
         if (! $user) {
             session()->setFlashdata('error', lang('Auth.verify_invalid'));
@@ -32,7 +48,7 @@ class Auth extends BaseController
 
         helper('text');
 
-        // Kullanıcıyı aktif et ve anahtarı yenileyerek eski linki geçersiz kıl (NULL hatasını önler)
+        // Kullanıcıyı aktif et ve eski linkin tekrar kullanılmaması için token'ı yenile
         $user->setStatus(defined('USER_ACTIVE') ? USER_ACTIVE : 'ACTIVE');
         $user->setVerifKey(random_string('alnum', 32));
 
@@ -90,7 +106,7 @@ class Auth extends BaseController
         $user->setVerifKey($resetToken);
         $userModel->save($user);
 
-        // 3. E-posta: Şifre sıfırlama bağlantısı gönder
+        // 3. E-posta: Güvenli buton linkli şifre sıfırlama bağlantısı gönder
         $emailService = new EmailService();
         $emailService->sendPasswordReset($user, $resetToken);
 
@@ -106,14 +122,34 @@ class Auth extends BaseController
         $locale = $this->request->getLocale();
         $userModel = new UserModel();
 
-        if (empty($token) || ! $userModel->where('verif_key', $token)->first()) {
+        $token = !empty($token) ? $token : (string) $this->request->getGet('token');
+        $userId = $this->request->getGet('id');
+        $userEmail = $this->request->getGet('email');
+
+        if (empty($token)) {
+            session()->setFlashdata('error', lang('Auth.reset_token_invalid'));
+            return redirect()->to("/{$locale}/auth/forgot-password");
+        }
+
+        $builder = $userModel->where('verif_key', $token);
+        if (!empty($userId)) {
+            $builder->where('id', $userId);
+        }
+        if (!empty($userEmail)) {
+            $builder->where('email', urldecode($userEmail));
+        }
+
+        $user = $builder->first();
+
+        if (! $user) {
             session()->setFlashdata('error', lang('Auth.reset_token_invalid'));
             return redirect()->to("/{$locale}/auth/forgot-password");
         }
 
         return view('pagers/reset_password', [
             'title' => lang('Auth.reset_password_title'),
-            'token' => $token
+            'token' => $token,
+            'email' => $user->getEmail()
         ]);
     }
 
@@ -125,6 +161,7 @@ class Auth extends BaseController
         $locale = $this->request->getLocale();
         $userModel = new UserModel();
 
+        $token = !empty($token) ? $token : (string) $this->request->getPost('token');
         $user = $userModel->where('verif_key', $token)->first();
 
         if (empty($token) || ! $user) {
@@ -150,7 +187,7 @@ class Auth extends BaseController
 
         helper('text');
 
-        // Yeni şifreyi ayarla ve sıfırlama anahtarını yenileyerek eski token'ı geçersiz kıl (NULL hatasını önler)
+        // Yeni şifreyi ayarla ve sıfırlama anahtarını yenileyerek eski token'ı geçersiz kıl
         $user->setPassword((string) $this->request->getPost('password'));
         $user->setVerifKey(random_string('alnum', 32));
 

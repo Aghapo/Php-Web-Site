@@ -88,3 +88,6 @@ $routes->group('auth', static function ($routes) {
 
 $routes->get('login', 'Login::index');
 $routes->post('login/kontrol', 'Login::kontrol');
+
+// SMTP Test Rotası
+$routes->get('test-mail', 'Home::testMail');

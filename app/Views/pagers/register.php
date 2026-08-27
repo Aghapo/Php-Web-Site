@@ -31,11 +31,14 @@
     <div class="register-container">
         <div class="register-card">
 
-            <!-- Dil Seçici (Language Switcher) -->
+            <!-- Dil Seçici (Language Switcher) & Ana Sayfa Bağlantısı -->
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="/<?= $currentLocale ?>" class="text-decoration-none text-muted small">
+                        <i class="bi bi-house-door-fill me-1"></i> <?= $currentLocale === 'tr' ? 'Ana Sayfa' : 'Home' ?>
+                    </a>
                     <?php if ($isAdmin): ?>
-                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-semibold">
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 rounded-pill fw-semibold small">
                             <i class="bi bi-shield-lock-fill me-1"></i> <?= esc(lang('Register.admin_badge')) ?>
                         </span>
                     <?php endif; ?>
@@ -225,9 +228,16 @@
                 </button>
             </form>
 
-            <!-- Giriş Yap Linki -->
-            <div class="login-link-container">
-                <?= esc(lang('Register.have_account')) ?> <a href="/login"><?= esc(lang('Register.login')) ?></a>
+            <!-- Giriş Yap & Şifremi Unuttum Linkleri -->
+            <div class="login-link-container d-flex flex-column gap-2 mt-4 pt-3 border-top">
+                <div>
+                    <?= esc(lang('Register.have_account')) ?> <a href="/<?= $currentLocale ?>/login" class="fw-bold"><?= esc(lang('Register.login')) ?></a>
+                </div>
+                <div>
+                    <a href="/<?= $currentLocale ?>/auth/forgot-password" class="text-muted small text-decoration-none">
+                        <i class="bi bi-question-circle"></i> <?= $currentLocale === 'tr' ? 'Şifrenizi mi unuttunuz?' : 'Forgot your password?' ?>
+                    </a>
+                </div>
             </div>
 
         </div>

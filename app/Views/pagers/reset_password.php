@@ -21,8 +21,11 @@
     <div class="register-container">
         <div class="register-card">
 
-            <!-- Dil Seçici -->
-            <div class="d-flex justify-content-end mb-3">
+            <!-- Dil Seçici & Ana Sayfa Bağlantısı -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <a href="/<?= $currentLocale ?>" class="text-decoration-none text-muted small">
+                    <i class="bi bi-house-door-fill me-1"></i> <?= $currentLocale === 'tr' ? 'Ana Sayfa' : 'Home' ?>
+                </a>
                 <div class="btn-group btn-group-sm" role="group">
                     <a href="/tr/auth/reset-password/<?= esc($token) ?>" class="btn btn-sm <?= ($currentLocale === 'tr') ? 'btn-primary text-white' : 'btn-outline-secondary' ?>">🇹🇷 TR</a>
                     <a href="/en/auth/reset-password/<?= esc($token) ?>" class="btn btn-sm <?= ($currentLocale === 'en') ? 'btn-primary text-white' : 'btn-outline-secondary' ?>">🇬🇧 EN</a>
@@ -38,6 +41,17 @@
                 <p><?= esc(lang('Auth.reset_password_desc')) ?></p>
             </div>
 
+            <!-- E-Posta Bilgi Kutucuğu -->
+            <?php if (!empty($email)): ?>
+                <div class="alert alert-light border d-flex align-items-center mb-4 py-2 px-3 rounded-3 shadow-sm">
+                    <i class="bi bi-person-circle text-primary fs-5 me-2"></i>
+                    <div>
+                        <div class="text-muted" style="font-size: 11px;"><?= $currentLocale === 'tr' ? 'Hesap E-Postası' : 'Account Email' ?></div>
+                        <strong class="text-dark"><?= esc($email) ?></strong>
+                    </div>
+                </div>
+            <?php endif; ?>
+
             <!-- Bildirimler -->
             <?= view('admin/layouts/partials/errors') ?>
 
@@ -47,7 +61,7 @@
 
                 <div class="mb-3">
                     <label for="password" class="form-label">
-                        <i class="bi bi-lock text-muted"></i> <?= esc(lang('Register.password')) ?>
+                        <i class="bi bi-lock text-muted"></i> <?= esc(lang('Register.password')) ?> <span class="text-danger">*</span>
                     </label>
                     <div class="password-input-group">
                         <input type="password" 
@@ -56,7 +70,7 @@
                                name="password" 
                                placeholder="••••••••" 
                                required>
-                        <button type="button" class="password-toggle-btn" data-target="password">
+                        <button type="button" class="password-toggle-btn" data-target="password" aria-label="Toggle password visibility">
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>
@@ -71,7 +85,7 @@
 
                 <div class="mb-4">
                     <label for="password_confirm" class="form-label">
-                        <i class="bi bi-shield-lock text-muted"></i> <?= esc(lang('Register.password_confirm')) ?>
+                        <i class="bi bi-shield-lock text-muted"></i> <?= esc(lang('Register.password_confirm')) ?> <span class="text-danger">*</span>
                     </label>
                     <div class="password-input-group">
                         <input type="password" 
@@ -80,7 +94,7 @@
                                name="password_confirm" 
                                placeholder="••••••••" 
                                required>
-                        <button type="button" class="password-toggle-btn" data-target="password_confirm">
+                        <button type="button" class="password-toggle-btn" data-target="password_confirm" aria-label="Toggle confirm password visibility">
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>
@@ -90,14 +104,14 @@
                     <?php endif; ?>
                 </div>
 
-                <button type="submit" class="btn-register" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);">
+                <button type="submit" class="btn-register" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);" id="submitBtn">
                     <i class="bi bi-check-lg fs-5"></i>
                     <span><?= esc(lang('Auth.reset_submit_btn')) ?></span>
                 </button>
             </form>
 
             <div class="login-link-container">
-                <a href="/login"><i class="bi bi-arrow-left me-1"></i> <?= esc(lang('Auth.back_to_login')) ?></a>
+                <a href="/<?= $currentLocale ?>/login"><i class="bi bi-arrow-left me-1"></i> <?= esc(lang('Auth.back_to_login')) ?></a>
             </div>
 
         </div>

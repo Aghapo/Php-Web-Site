@@ -44,16 +44,22 @@ class EmailService
 
     /**
      * 1. Hesap Doğrulama E-postası Gönderir
+     * Modern güvenli link: /{locale}/auth/verify/{token}?id={id}&email={email}
      */
     public function sendAccountVerification(UserEntity $user): bool
     {
         $locale = service('request')->getLocale();
-        $verifyUrl = site_url("{$locale}/auth/verify/" . $user->getVerifKey());
+        $userId = $user->getID() ?? '';
+        $userEmail = urlencode($user->getEmail());
+        $token = $user->getVerifKey();
+
+        $verifyUrl = site_url("{$locale}/auth/verify/{$token}?id={$userId}&email={$userEmail}");
 
         $htmlBody = view('emails/account_verification', [
             'name'       => $user->getFullName() ?: $user->getFirstName(),
             'verifyUrl'  => $verifyUrl,
             'verifCode'  => $user->getVerifCode(),
+            'email'      => $user->getEmail()
         ]);
 
         $email = $this->getEmailClient();
@@ -75,6 +81,7 @@ class EmailService
         $htmlBody = view('emails/account_verified', [
             'name'     => $user->getFullName() ?: $user->getFirstName(),
             'loginUrl' => $loginUrl,
+            'email'    => $user->getEmail()
         ]);
 
         $email = $this->getEmailClient();
@@ -87,15 +94,20 @@ class EmailService
 
     /**
      * 3. Şifre Sıfırlama Bağlantısı E-postası Gönderir
+     * Modern güvenli link: /{locale}/auth/reset-password/{token}?id={id}&email={email}
      */
     public function sendPasswordReset(UserEntity $user, string $token): bool
     {
         $locale = service('request')->getLocale();
-        $resetUrl = site_url("{$locale}/auth/reset-password/{$token}");
+        $userId = $user->getID() ?? '';
+        $userEmail = urlencode($user->getEmail());
+
+        $resetUrl = site_url("{$locale}/auth/reset-password/{$token}?id={$userId}&email={$userEmail}");
 
         $htmlBody = view('emails/password_reset', [
             'name'     => $user->getFullName() ?: $user->getFirstName(),
             'resetUrl' => $resetUrl,
+            'email'    => $user->getEmail()
         ]);
 
         $email = $this->getEmailClient();
@@ -117,6 +129,7 @@ class EmailService
         $htmlBody = view('emails/password_reset_success', [
             'name'     => $user->getFullName() ?: $user->getFirstName(),
             'loginUrl' => $loginUrl,
+            'email'    => $user->getEmail()
         ]);
 
         $email = $this->getEmailClient();

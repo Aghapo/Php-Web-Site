@@ -37,13 +37,56 @@
 <!-- YEŞİL BALONCUK (ALARM) BİTİŞİ -->
 
     <!-- Üst Menü Alanı -->
-    <nav class="navbar navbar-dark bg-dark mb-4">
+    <?php $locale = service('request')->getLocale(); ?>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="/">Öğrenci Bilgi Sistemi</a>
-            <form action="/logout" method="POST" class="mb-0">
-                <?= csrf_field() ?>
-                <button type="submit" class="btn btn-danger btn-sm">Çıkış Yap</button>
-            </form>
+            <a class="navbar-brand fw-bold" href="/<?= $locale ?>">
+                <i class="bi bi-mortarboard-fill text-primary me-2"></i>Öğrenci Bilgi Sistemi
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="adminNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/<?= $locale ?>"><i class="bi bi-house-door"></i> Ana Sayfa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/<?= $locale ?>/ogrenci/ekle"><i class="bi bi-person-plus"></i> Öğrenci Ekle</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/<?= $locale ?>/dersler"><i class="bi bi-book"></i> Dersler</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/<?= $locale ?>/ogrenci/cop_kutusu"><i class="bi bi-trash"></i> Çöp Kutusu</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Dil Seçici -->
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a href="/tr" class="btn btn-sm <?= ($locale === 'tr') ? 'btn-primary' : 'btn-outline-secondary' ?>">TR</a>
+                        <a href="/en" class="btn btn-sm <?= ($locale === 'en') ? 'btn-primary' : 'btn-outline-secondary' ?>">EN</a>
+                    </div>
+
+                    <?php if (session()->get('giris_yapildi')): ?>
+                        <span class="text-light small fw-medium">
+                            <i class="bi bi-person-check-fill text-success"></i> <?= esc(session('admin_isim')) ?>
+                        </span>
+                        <form action="/logout" method="POST" class="mb-0">
+                            <?= csrf_field() ?>
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="bi bi-box-arrow-right"></i> Çıkış
+                            </button>
+                        </form>
+                    <?php else: ?>
+                        <a href="/<?= $locale ?>/login" class="btn btn-outline-light btn-sm">Giriş Yap</a>
+                        <a href="/<?= $locale ?>/register" class="btn btn-primary btn-sm">Kayıt Ol</a>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
     </nav>
 
